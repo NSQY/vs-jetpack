@@ -74,24 +74,24 @@ class BaseOperator:
 
 
 class UnaryBaseOperator(BaseOperator):
-    def __call__(self, arg0: ExprOtherT) -> ComputedVar:
+    def __call__(self, x: ExprOtherT) -> ComputedVar:
         from .variables import ComputedVar
 
-        return ComputedVar(_normalize_args(arg0, self))
+        return ComputedVar(_normalize_args(x, self))  # pyright: ignore[reportArgumentType]
 
 
 class BinaryBaseOperator(BaseOperator):
-    def __call__(self, arg0: ExprOtherT, arg1: ExprOtherT) -> ComputedVar:
+    def __call__(self, x: ExprOtherT, y: ExprOtherT) -> ComputedVar:
         from .variables import ComputedVar
 
-        return ComputedVar(_normalize_args(arg0, arg1, self))
+        return ComputedVar(_normalize_args(x, y, self))  # pyright: ignore[reportArgumentType]
 
 
 class TernaryBaseOperator(BaseOperator):
-    def __call__(self, arg0: ExprOtherT, arg1: ExprOtherT, arg2: ExprOtherT) -> ComputedVar:
+    def __call__(self, x: ExprOtherT, y: ExprOtherT, z: ExprOtherT) -> ComputedVar:
         from .variables import ComputedVar
 
-        return ComputedVar(_normalize_args(arg0, arg1, arg2, self))
+        return ComputedVar(_normalize_args(x, y, z, self))  # pyright: ignore[reportArgumentType]
 
 
 @dataclass
