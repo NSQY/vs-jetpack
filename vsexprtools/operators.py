@@ -130,7 +130,7 @@ class TernaryOperator(Generic[T, R], TernaryBaseOperator):
 
 
 @dataclass
-class TernaryIfOperator(TernaryOperator[ExprOtherT, ExprOtherT]):
+class TernaryIfOperator(TernaryOperator["ExprOtherT", "ExprOtherT"]):
     def __call__(self, cond: ExprOtherT, if_true: ExprOtherT, if_false: ExprOtherT) -> ComputedVar:
         return super().__call__(cond, if_true, if_false)
 
@@ -171,181 +171,116 @@ class TernaryPixelAccessOperator(Generic[T], TernaryBaseOperator):
 
 class ExprOperators:
     # 1 Argument
-    @staticmethod
-    def EXP(x: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Calculates e**x for every element in x."""
-        return UnaryMathOperator(ExprOp.EXP, math.exp)(x)
+    EXP = UnaryMathOperator(ExprOp.EXP, math.exp)
+    """Exponential function (e^x)."""
 
-    @staticmethod
-    def LOG(x: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Calculates the natural logarithm for every element in x."""
-        return UnaryMathOperator(ExprOp.LOG, math.log)(x)
+    LOG = UnaryMathOperator(ExprOp.LOG, math.log)
+    """Natural logarithm of x."""
 
-    @staticmethod
-    def SQRT(x: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Calculates the square root for every element in x."""
-        return UnaryMathOperator(ExprOp.SQRT, math.sqrt)(x)
+    SQRT = UnaryMathOperator(ExprOp.SQRT, math.sqrt)
+    """Square root of x."""
 
-    @staticmethod
-    def SIN(x: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Calculates the sine for every element in x."""
-        return UnaryMathOperator(ExprOp.SIN, math.sin)(x)
+    SIN = UnaryMathOperator(ExprOp.SIN, math.sin)
+    """Sine (radians) of x."""
 
-    @staticmethod
-    def COS(x: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Calculates the cosine for every element in x."""
-        return UnaryMathOperator(ExprOp.COS, math.cos)(x)
+    COS = UnaryMathOperator(ExprOp.COS, math.cos)
+    """Cosine (radians) of x."""
 
-    @staticmethod
-    def ABS(x: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Calculates the absolute value for every element in x."""
-        return UnaryMathOperator[SupportsAbs[SupportsIndex], SupportsIndex](ExprOp.ABS, abs)(x)
+    ABS = UnaryMathOperator[SupportsAbs[SupportsIndex], SupportsIndex](ExprOp.ABS, abs)
+    """Absolute value of x."""
 
-    @staticmethod
-    def NOT(x: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Performs a logical NOT on every element in x."""
-        return UnaryBoolOperator(ExprOp.NOT, op.not_)(x)
+    NOT = UnaryBoolOperator(ExprOp.NOT, op.not_)
+    """Logical NOT of x."""
 
-    @staticmethod
-    def DUP(x: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Duplicates the top of the stack."""
-        return UnaryBaseOperator(ExprOp.DUP)(x)
+    DUP = BaseOperator(ExprOp.DUP)
+    """Duplicate the top of the stack."""
 
-    @staticmethod
-    def DUPN(x: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Duplicates the nth element from the top of the stack."""
-        return UnaryBaseOperator(ExprOp.DUPN)(x)
+    DUPN = BaseOperator(ExprOp.DUPN)
+    """Duplicates the nth element from the top of the stack."""
 
-    @staticmethod
-    def TRUNC(x: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Truncates every element in x."""
-        return UnaryMathOperator[SupportsTrunc, int](ExprOp.TRUNC, math.trunc)(x)
+    TRUNC = UnaryMathOperator[SupportsTrunc, int](ExprOp.TRUNC, math.trunc)
+    """Truncate x to integer (toward zero)."""
 
-    @staticmethod
-    def ROUND(x: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Rounds every element in x."""
-        return UnaryMathOperator[SupportsRound[int], int](ExprOp.ROUND, lambda val: round(val))(x)
+    ROUND = UnaryMathOperator[SupportsRound[int], int](ExprOp.ROUND, lambda x: round(x))
+    """Round x to nearest integer."""
 
-    @staticmethod
-    def FLOOR(x: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Floors every element in x."""
-        return UnaryMathOperator[SupportsFloatOrIndex, int](ExprOp.FLOOR, math.floor)(x)
+    FLOOR = UnaryMathOperator[SupportsFloatOrIndex, int](ExprOp.FLOOR, math.floor)
+    """Round down x to nearest integer."""
+
+    # DROP / DROPN / SORTN / VAR_STORE / VAR_PUSH ??
 
     # 2 Arguments
-    @staticmethod
-    def MAX(a: ExprOtherT, b: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Calculates the maximum of a and b."""
-        return BinaryMathOperator[SuppRC, SuppRC](ExprOp.MAX, max)(a, b)
+    MAX = BinaryMathOperator[SuppRC, SuppRC](ExprOp.MAX, max)
+    """Calculates the maximum of x and y."""
 
-    @staticmethod
-    def MIN(a: ExprOtherT, b: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Calculates the minimum of a and b."""
-        return BinaryMathOperator[SuppRC, SuppRC](ExprOp.MIN, min)(a, b)
+    MIN = BinaryMathOperator[SuppRC, SuppRC](ExprOp.MIN, min)
+    """Calculates the minimum of x and y."""
 
-    @staticmethod
-    def ADD(a: ExprOtherT, b: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Performs addition of two elements (a + b)."""
-        return BinaryOperator(ExprOp.ADD, op.add)(a, b)
+    ADD = BinaryOperator(ExprOp.ADD, op.add)
+    """Performs addition of two elements (x + y)."""
 
-    @staticmethod
-    def SUB(a: ExprOtherT, b: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Performs subtraction of two elements (a - b)."""
-        return BinaryOperator(ExprOp.SUB, op.sub)(a, b)
+    SUB = BinaryOperator(ExprOp.SUB, op.sub)
+    """Performs subtraction of two elements (x - y)."""
 
-    @staticmethod
-    def MUL(a: ExprOtherT, b: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Performs multiplication of two elements (a * b)."""
-        return BinaryOperator(ExprOp.MUL, op.mul)(a, b)
+    MUL = BinaryOperator(ExprOp.MUL, op.mul)
+    """Performs multiplication of two elements (x * y)."""
 
-    @staticmethod
-    def DIV(a: ExprOtherT, b: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Performs division of two elements (a / b)."""
-        return BinaryOperator(ExprOp.DIV, op.truediv)(a, b)
+    DIV = BinaryOperator(ExprOp.DIV, op.truediv)
+    """Performs division of two elements (x / y)."""
 
-    @staticmethod
-    def POW(a: ExprOtherT, b: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Performs a to the power of b (a ** b)."""
-        return BinaryOperator(ExprOp.POW, op.pow)(a, b)
+    POW = BinaryOperator(ExprOp.POW, op.pow)
+    """Performs x to the power of y (x ** y)."""
 
-    @staticmethod
-    def GT(a: ExprOtherT, b: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Performs a > b."""
-        return BinaryBoolOperator(ExprOp.GT, op.gt)(a, b)
+    GT = BinaryBoolOperator(ExprOp.GT, op.gt)
+    """Performs x > y."""
 
-    @staticmethod
-    def LT(a: ExprOtherT, b: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Performs a < b."""
-        return BinaryBoolOperator(ExprOp.LT, op.lt)(a, b)
+    LT = BinaryBoolOperator(ExprOp.LT, op.lt)
+    """Performs x < y."""
 
-    @staticmethod
-    def EQ(a: ExprOtherT, b: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Performs a == b."""
-        return BinaryBoolOperator(ExprOp.EQ, op.eq)(a, b)
+    EQ = BinaryBoolOperator(ExprOp.EQ, op.eq)
+    """Performs x == y."""
 
-    @staticmethod
-    def GTE(a: ExprOtherT, b: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Performs a >= b."""
-        return BinaryBoolOperator(ExprOp.GTE, op.ge)(a, b)
+    GTE = BinaryBoolOperator(ExprOp.GTE, op.ge)
+    """Performs x >= y."""
 
-    @staticmethod
-    def LTE(a: ExprOtherT, b: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Performs a <= b."""
-        return BinaryBoolOperator(ExprOp.LTE, op.le)(a, b)
+    LTE = BinaryBoolOperator(ExprOp.LTE, op.le)
+    """Performs x <= y."""
 
-    @staticmethod
-    def AND(a: ExprOtherT, b: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Performs a logical AND."""
-        return BinaryBoolOperator(ExprOp.AND, op.and_)(a, b)
+    AND = BinaryBoolOperator(ExprOp.AND, op.and_)
+    """Performs a logical AND."""
 
-    @staticmethod
-    def OR(a: ExprOtherT, b: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Performs a logical OR."""
-        return BinaryBoolOperator(ExprOp.OR, op.or_)(a, b)
+    OR = BinaryBoolOperator(ExprOp.OR, op.or_)
+    """Performs a logical OR."""
 
-    @staticmethod
-    def XOR(a: ExprOtherT, b: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Performs a logical XOR."""
-        return BinaryOperator(ExprOp.XOR, op.xor)(a, b)
+    XOR = BinaryOperator(ExprOp.XOR, op.xor)
+    """Performs a logical XOR."""
 
-    @staticmethod
-    def SWAP(a: ExprOtherT, b: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Swaps the top two elements of the stack."""
-        return BinaryBaseOperator(ExprOp.SWAP)(a, b)
+    SWAP = BinaryBaseOperator(ExprOp.SWAP)
+    """Swaps the top two elements of the stack."""
 
-    @staticmethod
-    def SWAPN(a: ExprOtherT, b: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Swaps the top element with the nth element from the top of the stack."""
-        return BinaryBaseOperator(ExprOp.SWAPN)(a, b)
+    SWAPN = BinaryBaseOperator(ExprOp.SWAPN)
+    """Swaps the top element with the nth element from the top of the stack."""
 
-    @staticmethod
-    def MOD(a: ExprOtherT, b: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Performs a % b."""
-        return BinaryOperator(ExprOp.MOD, op.mod)(a, b)
+    MOD = BinaryOperator(ExprOp.MOD, op.mod)
+    """Performs x % y."""
 
     # 3 Arguments
-    @staticmethod
-    def TERN(cond: ExprOtherT, if_true: ExprOtherT, if_false: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Ternary operator (if cond then if_true else if_false)."""
-        return TernaryIfOperator(ExprOp.TERN, lambda x, y, z: (x if z else y))(cond, if_true, if_false)
+    TERN = TernaryIfOperator(ExprOp.TERN, lambda x, y, z: (x if z else y))
+    """Ternary operator (if cond then if_true else if_false)."""
 
-    @staticmethod
-    def CLAMP(value: ExprOtherT, min_val: ExprOtherT, max_val: ExprOtherT) -> ComputedVar:  # noqa: N802
-        """Clamps a value between a min and a max."""
-        return TernaryCompOperator(ExprOp.CLAMP, lambda x, y, z: max(y, min(x, z)))(value, min_val, max_val)
+    CLAMP = TernaryClampOperator(ExprOp.CLAMP, lambda x, y, z: max(y, min(x, z)))
+    """Clamps a value between a min and a max."""
 
     # Aliases
     IF = TERN
+    """Ternary operator (if cond then if_true else if_false)."""
 
     # Special Operators
-    @staticmethod
-    def REL_PIX(char: str, x: int, y: int) -> ComputedVar:  # noqa: N802
-        """Relative pixel access."""
-        return TernaryPixelAccessOperator[int](ExprOp.REL_PIX)(char, x, y)
+    REL_PIX = TernaryPixelAccessOperator[int](ExprOp.REL_PIX)
+    """Relative pixel access."""
 
-    @staticmethod
-    def ABS_PIX(char: str, x: Union[int, "ExprVar"], y: Union[int, "ExprVar"]) -> ComputedVar:  # noqa: N802
-        """Absolute pixel access."""
-        return TernaryPixelAccessOperator[Union[int, "ExprVar"]](ExprOp.ABS_PIX)(char, x, y)
+    ABS_PIX = TernaryPixelAccessOperator[Union[int, "ExprVar"]](ExprOp.ABS_PIX)
+    """Absolute pixel access."""
 
     # Helper Functions
 
