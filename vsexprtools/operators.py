@@ -129,7 +129,8 @@ class TernaryOperator(Generic[T, R], TernaryBaseOperator):
     function: Callable[[bool, T, R], T | R]
 
 
-class TernaryIfOperator(TernaryOperator["ExprOtherT", "ExprOtherT"]):
+@dataclass
+class TernaryIfOperator(TernaryOperator[ExprOtherT, ExprOtherT]):
     def __call__(self, cond: ExprOtherT, if_true: ExprOtherT, if_false: ExprOtherT) -> ComputedVar:
         return super().__call__(cond, if_true, if_false)
 
@@ -137,6 +138,12 @@ class TernaryIfOperator(TernaryOperator["ExprOtherT", "ExprOtherT"]):
 @dataclass
 class TernaryCompOperator(TernaryBaseOperator):
     function: Callable[[SuppRC, SuppRC, SuppRC], SuppRC]
+
+
+@dataclass
+class TernaryClampOperator(TernaryCompOperator):
+    def __call__(self, x: ExprOtherT, min: ExprOtherT, max: ExprOtherT) -> ComputedVar:
+        return super().__call__(x, min, max)
 
 
 class TernaryPixelAccessOperator(Generic[T], TernaryBaseOperator):
@@ -148,7 +155,7 @@ class TernaryPixelAccessOperator(Generic[T], TernaryBaseOperator):
         from .variables import ComputedVar
 
         self.set_vars(char, x, y)
-        return ComputedVar([copy(self)])
+        return ComputedVar([copy(self)])  # pyright: ignore[reportArgumentType]
 
     def set_vars(self, char: str, x: T, y: T) -> None:
         self.char = char
