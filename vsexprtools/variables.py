@@ -362,6 +362,10 @@ class ClipVar(ExprVar):
     def depth(self) -> LiteralVar:
         return LiteralVar(get_depth(self.clip))
 
+    @property
+    def frame_number(self) -> LiteralVar:
+        return LiteralVar("N")
+
     # Helper functions
     def scale(
         self,
