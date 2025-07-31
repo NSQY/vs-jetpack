@@ -482,6 +482,9 @@ class ExprOp(ExprOpBase, metaclass=ExprOpExtraMeta):
     NOT = "not", 1
     """Logical NOT."""
 
+    BITNOT = "bitnot", 1
+    """Bitwise NOT."""
+
     DUP = "dup", 1
     """Duplicate the top of the stack."""
 
@@ -559,6 +562,15 @@ class ExprOp(ExprOpBase, metaclass=ExprOpExtraMeta):
     XOR = "xor", 2
     """Logical XOR."""
 
+    BITAND = "bitand", 2
+    """Bitwise AND."""
+
+    BITOR = "bitor", 2
+    """Bitwise OR."""
+
+    BITXOR = "bitxor", 2
+    """Bitwise XOR."""
+
     SWAP = "swap", 2
     """Swap top two values on the stack."""
 
@@ -576,6 +588,13 @@ class ExprOp(ExprOpBase, metaclass=ExprOpExtraMeta):
     # 3 Argument (akarin)
     CLAMP = "clamp", 3
     """Clamp a value between min and max."""
+
+    LERP = "lerp", 3
+    """`x y z lerp` is `x * z + y * (1 - z)`."""
+
+    # N Argument (akarin)
+    POLYVAL = "polyval", -1
+    """`c0 c1 ... cN-1 x polyvalN` evaluates a polynomial. N is the number of coefficients."""
 
     # Special Operators
     REL_PIX = "{char:s}[{x:d},{y:d}]", 3
