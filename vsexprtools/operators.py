@@ -324,6 +324,27 @@ class ExprOperators:
         """Performs a % b."""
         return BinaryOperator(ExprOp.MOD, op.mod)(x, y)
 
+    @staticmethod
+    def BITNOT(x: ExprOtherT) -> ComputedVar:  # noqa: N802
+        """Performs a bitwise NOT on every element in x."""
+        # //TODO Type error here
+        return UnaryOperator(ExprOp.BITNOT, op.inv)(x)
+
+    @staticmethod
+    def BITAND(x: ExprOtherT, y: ExprOtherT) -> ComputedVar:  # noqa: N802
+        """Performs a bitwise AND."""
+        return BinaryOperator(ExprOp.BITAND, op.and_)(x, y)
+
+    @staticmethod
+    def BITOR(x: ExprOtherT, y: ExprOtherT) -> ComputedVar:  # noqa: N802
+        """Performs a bitwise OR."""
+        return BinaryOperator(ExprOp.BITOR, op.or_)(x, y)
+
+    @staticmethod
+    def BITXOR(x: ExprOtherT, y: ExprOtherT) -> ComputedVar:  # noqa: N802
+        """Performs a bitwise XOR."""
+        return BinaryOperator(ExprOp.BITXOR, op.xor)(x, y)
+
     # 3 Arguments
     @staticmethod
     def TERN(cond: ExprOtherT, if_true: ExprOtherT, if_false: ExprOtherT) -> ComputedVar:  # noqa: N802
@@ -345,6 +366,28 @@ class ExprOperators:
 
     ABS_PIX = TernaryPixelAccessOperator[Union[int, "ExprVar"]](ExprOp.ABS_PIX)
     """Absolute pixel access."""
+
+    @staticmethod
+    def LERP(x: ExprOtherT, y: ExprOtherT, z: ExprOtherT) -> ComputedVar:  # noqa: N802
+        """Performs linear interpolation. `x y z lerp` is equivalent to `x * z + y * (1 - z)`."""
+        return TernaryBaseOperator(ExprOp.LERP)(x, y, z)
+
+    # N Arguments
+    @staticmethod
+    def POLYVAL(x: ExprOtherT, *coeffs: ExprOtherT) -> ComputedVar:
+        """
+        Evaluates a polynomial
+        `c0 c1 ... cN-1 x polyvalN`
+        Usage: POLYVAL(x, c0, c1, ..., cN)
+        """
+        from .variables import ComputedVar
+
+        n = len(coeffs) - 1
+        op_string = f"{ExprOp.POLYVAL}{n}"
+
+        return ComputedVar(_normalize_args(*coeffs, x, op_string))
+
+    POLYEVAL = POLYVAL
 
     # Helper Functions
 
