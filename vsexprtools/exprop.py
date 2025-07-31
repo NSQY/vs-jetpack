@@ -479,6 +479,9 @@ class ExprOp(ExprOpBase, metaclass=ExprOpExtraMeta):
     NOT = "not", 1
     """Logical NOT."""
 
+    BITNOT = "bitnot", 1
+    """Bitwise NOT."""
+
     DUP = "dup", 1
     """Duplicate the top of the stack."""
 
@@ -555,9 +558,6 @@ class ExprOp(ExprOpBase, metaclass=ExprOpExtraMeta):
 
     XOR = "xor", 2
     """Logical XOR."""
-
-    BITNOT = "bitnot", 1
-    """Bitwise NOT."""
 
     BITAND = "bitand", 2
     """Bitwise AND."""
