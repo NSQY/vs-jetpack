@@ -408,3 +408,64 @@ class ExprOperators:
         if isinstance(arg0, Sequence):
             return cast(list[ComputedVar], list(arg0))
         return cast(ComputedVar, arg0)
+
+    @classmethod
+    def accumulate(
+        cls,
+        operator: Callable[[ExprOtherT, ExprOtherT], ComputedVar],
+        items: Sequence[ExprOtherT]
+    ) -> ExprOtherT | ComputedVar:
+        """
+        Applies a binary operator cumulatively to the items of a sequence,
+        from left to right, so as to reduce the sequence to a single value.
+
+        For example, `accumulate(op.ADD, [a, b, c, d])` calculates
+        `op.ADD(op.ADD(op.ADD(a, b), c), d)`.
+
+        :param operator: A binary operator from the `op` object (e.g., `op.ADD`, `op.MIN`).
+        :param items: A sequence of items to be reduced.
+        :return: The result of the reduction.
+
+        Example:
+
+            neighbors = [
+                x[-1, -1], x[0, -1], x[1, -1],
+                x[-1,  0], x[0,  0], x[1,  0],
+                x[-1,  1], x[0,  1], x[1,  1]
+            ]
+
+            local_min = op.accumulate(op.MIN, neighbors)
+            local_max = op.accumulate(op.MAX, neighbors)
+
+            n1, n2, n3 = x[-1, -1], x[-1, 0], x[-1, 1]
+            n4, n5, n6 = x[0, -1], x[0, 0], x[0, 1]
+            n7, n8, n9 = x[1, -1], x[1, 0], x[1, 1]
+
+        Is equivalent to:
+
+            min1 = op.MIN(n1, n2)
+            min2 = op.MIN(min1, n3)
+            min3 = op.MIN(min2, n4)
+            min4 = op.MIN(min3, n5)
+            min5 = op.MIN(min4, n6)
+            min6 = op.MIN(min5, n7)
+            min7 = op.MIN(min6, n8)
+            local_min = op.MIN(min7, n9)
+
+            max1 = op.MAX(n1, n2)
+            max2 = op.MAX(max1, n3)
+            max3 = op.MAX(max2, n4)
+            max4 = op.MAX(max3, n5)
+            max5 = op.MAX(max4, n6)
+            max6 = op.MAX(max5, n7)
+            max7 = op.MAX(max6, n8)
+            local_max = op.MAX(max7, n9)
+        """
+        if not items:
+            raise ValueError("expr_reduce() arg 'items' must not be empty")
+
+        accumulator = items[0]
+        for i in range(1, len(items)):
+            accumulator = operator(accumulator, items[i])
+
+        return accumulator
