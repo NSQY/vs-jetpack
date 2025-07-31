@@ -12,6 +12,7 @@ from typing import NamedTuple, Sequence
 from vstools import vs
 
 from .funcs import expr_func
+from .extended import ExprFunctions
 from .operators import ExprOperators
 from .polyfills import disable_poly, enable_poly
 from .util import ExprVars
@@ -232,19 +233,18 @@ class inline_expr(AbstractContextManager[InlineExpr]):  # noqa: N801
     _in_context: bool
     _final_clip: vs.VideoNode | None
     _final_expr_node: ComputedVar
+    _functions: ExprFunctions
 
-    def __init__(self, clips: vs.VideoNode | Sequence[vs.VideoNode]) -> None:
-        """
-        Initializes the class.
-
-        Args:
-            clips: A single clip or a sequence of clip objects to be used in the expression.
-                These will be accessible within the context as `ClipVar` objects.
-        """
+    def __init__(
+        self,
+        clips: vs.VideoNode | Sequence[vs.VideoNode],
+        functions: Type[ExprFunctions] = ExprFunctions,
+    ) -> None:
         self._in_context = False
 
         self._clips = list(clips) if isinstance(clips, Sequence) else [clips]
         self._clips_char_map = [ClipVar(char, clip, self) for char, clip in zip(ExprVars.cycle, self._clips)]  # pyright: ignore[reportArgumentType]
+        self._functions = functions(self._clips)
 
         self._final_clip = None
         self._final_expr_node = self._clips_char_map[0].as_var()
@@ -254,7 +254,7 @@ class inline_expr(AbstractContextManager[InlineExpr]):  # noqa: N801
 
         enable_poly()
 
-        return InlineExpr(self._clips_char_map, ExprOperators(), self)
+        return InlineExpr(self._clips_char_map, ExprOperators(), self, self._functions)
 
     def __exit__(
         self,

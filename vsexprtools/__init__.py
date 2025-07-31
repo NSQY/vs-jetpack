@@ -4,3 +4,4 @@ from .manager import *
 from .operators import *
 from .util import *
 from .variables import *
+from .extended import *
