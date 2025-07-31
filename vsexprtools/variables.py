@@ -383,3 +383,30 @@ class ClipVar(ExprVar):
             )
 
         return ComplexVar(f"{self.char}.scale({value})", _resolve)
+
+    # TODO: Better name?
+    def plane_expr(self, expressions: list[ExprVar | str]) -> ComplexVar:
+        """
+        Allows applying different expressions for each plane.
+
+        Parameters:
+            expressions: A list of ExprVar or string expressions, where each item corresponds
+                         to a plane (e.g., [y_expr, u_expr, v_expr]).
+
+        Returns:
+            A ComplexVar that resolves to the appropriate expression based on the plane.
+        """
+        @ComplexVar.resolver
+        def _resolve(plane: int = 0, **kwargs: Any) -> str:
+            if plane < len(expressions):
+                expr = expressions[plane]
+                return str(expr) if isinstance(expr, ExprVar) else expr
+            else:
+                # just fallback to the original clip
+                return str(self)
+
+        # Hack
+        expr_strs = [f'"{e}"' if isinstance(e, str) else str(e) for e in expressions]
+        representation = f"plane_expr([{', '.join(expr_strs)}])"
+
+        return ComplexVar(representation, _resolve)
